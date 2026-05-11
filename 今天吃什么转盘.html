@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃什么 - 幸运转盘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin: 20px auto;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+            background: conic-gradient(
+                from 0deg,
+                #FF6B6B 0deg 7.2deg,
+                #4ECDC4 7.2deg 14.4deg,
+                #45B7D1 14.4deg 21.6deg,
+                #96CEB4 21.6deg 28.8deg,
+                #FFEAA7 28.8deg 36deg,
+                #DDA0DD 36deg 43.2deg,
+                #98D8C8 43.2deg 50.4deg,
+                #F7DC6F 50.4deg 57.6deg,
+                #BB8FCE 57.6deg 64.8deg,
+                #85C1E9 64.8deg 72deg,
+                #F8C471 72deg 79.2deg,
+                #82E0AA 79.2deg 86.4deg,
+                #F1948A 86.4deg 93.6deg,
+                #85C1E9 93.6deg 100.8deg,
+                #F7DC6F 100.8deg 108deg,
+                #BB8FCE 108deg 115.2deg,
+                #98D8C8 115.2deg 122.4deg,
+                #FF6B6B 122.4deg 129.6deg,
+                #4ECDC4 129.6deg 136.8deg,
+                #45B7D1 136.8deg 144deg,
+                #96CEB4 144deg 151.2deg,
+                #FFEAA7 151.2deg 158.4deg,
+                #DDA0DD 158.4deg 165.6deg,
+                #98D8C8 165.6deg 172.8deg,
+                #F7DC6F 172.8deg 180deg,
+                #BB8FCE 180deg 187.2deg,
+                #85C1E9 187.2deg 194.4deg,
+                #F8C471 194.4deg 201.6deg,
+                #82E0AA 201.6deg 208.8deg,
+                #F1948A 208.8deg 216deg,
+                #85C1E9 216deg 223.2deg,
+                #F7DC6F 223.2deg 230.4deg,
+                #BB8FCE 230.4deg 237.6deg,
+                #98D8C8 237.6deg 244.8deg,
+                #FF6B6B 244.8deg 252deg,
+                #4ECDC4 252deg 259.2deg,
+                #45B7D1 259.2deg 266.4deg,
+                #96CEB4 266.4deg 273.6deg,
+                #FFEAA7 273.6deg 280.8deg,
+                #DDA0DD 280.8deg 288deg,
+                #98D8C8 288deg 295.2deg,
+                #F7DC6F 295.2deg 302.4deg,
+                #BB8FCE 302.4deg 309.6deg,
+                #85C1E9 309.6deg 316.8deg,
+                #F8C471 316.8deg 324deg,
+                #82E0AA 324deg 331.2deg,
+                #F1948A 331.2deg 338.4deg,
+                #85C1E9 338.4deg 345.6deg,
+                #F7DC6F 345.6deg 352.8deg,
+                #BB8FCE 352.8deg 360deg
+            );
+        }
+
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wheel-item span {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            transform-origin: center;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #FF4757;
+            z-index: 10;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(145deg, #FF6B6B, #EE5A6F);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 5;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .center-circle:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .center-circle:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .spin-btn {
+            margin-top: 30px;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(145deg, #FF6B6B, #EE5A6F);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .spin-btn:active {
+            transform: translateY(0);
+        }
+
+        .spin-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .result-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FF6B6B;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .food-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            max-width: 600px;
+        }
+
+        .food-list h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .food-item {
+            padding: 5px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            text-align: center;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .wheel-container {
+                width: 350px;
+                height: 350px;
+            }
+            .title {
+                font-size: 1.8rem;
+            }
+            .food-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">🎰 今天吃什么 🎰</h1>
+    
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" width="500" height="500"></canvas>
+        <div class="center-circle" onclick="spin()">点击<br>开始</div>
+    </div>
+
+    <button class="spin-btn" onclick="spin()">开始转盘</button>
+
+    <div class="result">
+        <div class="result-label">今天推荐你吃：</div>
+        <div class="result-text" id="resultText">点击下方按钮开始</div>
+    </div>
+
+    <div class="food-list">
+        <h3>🍽️ 转盘食物清单</h3>
+        <div class="food-grid" id="foodGrid"></div>
+    </div>
+
+    <script>
+        const foods = [
+            '红烧肉', '糖醋排骨', '宫保鸡丁', '麻婆豆腐', '番茄炒蛋',
+            '青椒肉丝', '鱼香肉丝', '回锅肉', '水煮鱼', '酸菜鱼',
+            '可乐鸡翅', '蒜蓉粉丝虾', '清蒸鲈鱼', '红烧茄子', '地三鲜',
+            '干煸豆角', '酸辣土豆丝', '蒜蓉西兰花', '白切鸡', '烤鸭',
+            '牛肉面', '炸酱面', '担担面', '热干面', '螺蛳粉',
+            '酸辣粉', '麻辣烫', '火锅', '烤肉', '披萨',
+            '汉堡', '寿司', '拉面', '炒饭', '炒面',
+            '饺子', '包子', '煎饼果子', '肉夹馍', '凉皮',
+            '煲仔饭', '叉烧饭', '咖喱饭', '蛋包饭', '石锅拌饭',
+            '牛排', '意大利面', '三明治', '沙拉', '炸鸡',
+            '黄焖鸡', '卤肉饭', '章鱼小丸子', '烤冷面', '手抓饼',
+            '葱油拌面', '小笼包', '烧麦', '馄饨', '云吞面',
+            '猪脚饭', '腊味饭', '鸡公煲', '毛血旺', '水煮肉片',
+            '糖醋里脊', '京酱肉丝', '木须肉', '农家小炒肉', '干锅花菜',
+            '铁板牛肉', '海鲜粥', '肠粉', '叉烧包', '糯米鸡'
+        ];
+
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#F7DC6F',
+            '#BB8FCE', '#98D8C8', '#FF6B6B', '#4ECDC4', '#45B7D1',
+            '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
+            '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA', '#F1948A',
+            '#85C1E9', '#F7DC6F', '#BB8FCE', '#98D8C8', '#FF6B6B',
+            '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
+            '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471',
+            '#82E0AA', '#F1948A', '#85C1E9', '#F7DC6F', '#BB8FCE',
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#F7DC6F',
+            '#BB8FCE', '#98D8C8', '#FF6B6B', '#4ECDC4', '#45B7D1',
+            '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'
+        ];
+
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 240;
+
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const anglePerItem = (2 * Math.PI) / foods.length;
+            
+            for (let i = 0; i < foods.length; i++) {
+                const startAngle = i * anglePerItem - Math.PI / 2;
+                const endAngle = (i + 1) * anglePerItem - Math.PI / 2;
+                
+                // 绘制扇形
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制文字
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + anglePerItem / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 11px Microsoft YaHei';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 2;
+                ctx.fillText(foods[i], radius - 12, 4);
+                ctx.restore();
+            }
+            
+            // 绘制中心圆
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FF6B6B';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            document.querySelector('.spin-btn').disabled = true;
+            document.querySelector('.center-circle').style.pointerEvents = 'none';
+            
+            const spinAngle = 360 * 5 + Math.random() * 360;
+            const duration = 4000;
+            const startTime = Date.now();
+            const startRotation = currentRotation;
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // 使用缓动函数
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                currentRotation = startRotation + spinAngle * easeOut;
+                
+                canvas.style.transform = `rotate(${currentRotation}deg)`;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    document.querySelector('.spin-btn').disabled = false;
+                    document.querySelector('.center-circle').style.pointerEvents = 'auto';
+                    showResult();
+                }
+            }
+            
+            animate();
+        }
+
+        function showResult() {
+            const normalizedRotation = (360 - (currentRotation % 360)) % 360;
+            const anglePerItem = 360 / foods.length;
+            const index = Math.floor(normalizedRotation / anglePerItem) % foods.length;
+            const selectedFood = foods[index];
+            
+            const resultText = document.getElementById('resultText');
+            resultText.textContent = selectedFood;
+            resultText.style.animation = 'none';
+            setTimeout(() => {
+                resultText.style.animation = 'bounce 0.5s ease';
+            }, 10);
+        }
+
+        function createFoodGrid() {
+            const grid = document.getElementById('foodGrid');
+            foods.forEach((food, index) => {
+                const item = document.createElement('div');
+                item.className = 'food-item';
+                item.textContent = `${index + 1}. ${food}`;
+                grid.appendChild(item);
+            });
+        }
+
+        // 初始化
+        drawWheel();
+        createFoodGrid();
+    </script>
+</body>
+</html>
